@@ -98,6 +98,20 @@ router.post("/alunos", validarAluno, validarIdade, (req, res) => {
     res.status(201).send({mensagem: "Aluno matriculado com sucesso!"})
 })
 
+router.put("/alunos/:id", validarIdade, (req, res) => {
+    const id = Number(req.params.id)
+    const indice = alunos.findIndex((aluno) => aluno.id === id)
+    if(indice === -1){
+       return res.status(404).send({erro: "Aluno não encontrado!"})
+    }
+
+    let idade = req.body.idade
+
+    alunos[indice].idade = idade || alunos[indice].idade
+
+    res.send({mensagem: "Idade do aluno alterada com sucesso!"})
+})
+
 function validarSenha(req,res,next){
     if(req.headers.senha !== "coordenacao"){
         return res.status(401).send({erro: "Acesso negado!"})
