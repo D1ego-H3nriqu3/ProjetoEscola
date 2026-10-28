@@ -40,9 +40,67 @@ router.get("/alunos/:id", (req, res) => {
     }
 })
 
+function validarTurma(req,res,next){
+    if(!req.body.nome || !req.body.sala || req.body.sala === "" || req.body.nome === ""){
+        return res.status(400).send({erro: "As informações estão faltando ou incorretas!"})
+    }
+    next()
+}
+
+function verificarSala(req, res, next){
+    const indice = turmas.findIndex((turma) => turma.sala === req.body.sala)
+
+    if(indice !== -1){
+        return res.status(409).send({ erro:"Essa sala já está em uso!"})
+    }
+    next()
+}
+
+router.post("/turmas", validarTurma, verificarSala, (req, res) => {
+    let nome = req.body.nome
+    let sala = req.body.sala
+
+    let id = 1
+    if(turmas.length > 0){
+        id = turmas[turmas.length-1].id + 1
+    }
+
+    let turma = {id: id, nome: nome, sala: sala}
+    turmas.push(turma)
+    res.status(201).send({mensagem: "Turma criada com sucesso!"})
+})
+
+function validarAluno(req,res,next){
+    if(!req.body.nome || !req.body.idade || req.body.sala === ""){
+        return res.status(400).send({erro: "As informações estão faltando ou incorretas!"})
+    }
+    next()
+}
+
+function validarIdade(req, res, next){
+    if(req.body.idade < 14 || isNaN(req.body.idade)){
+        return res.status(200).send({erro: "Idade mínima: 14 anos" })
+    }
+    next()
+}
+
+router.post("/alunos", validarAluno, validarIdade, (req, res) => {
+    let nome = req.body.nome
+    let idade = req.body.idade
+
+    let id = 1
+    if(alunos.length > 0){
+        id = alunos[alunos.length-1].id + 1
+    }
+
+    let aluno = {id: id, nome: nome, idade: idade}
+    alunos.push(aluno)
+    res.status(201).send({mensagem: "Aluno matriculado com sucesso!"})
+})
+
 function validarSenha(req,res,next){
     if(req.headers.senha !== "coordenacao"){
-        res.status(401).send({erro: "Acesso negado!"})
+        return res.status(401).send({erro: "Acesso negado!"})
     }
     next()
 }
