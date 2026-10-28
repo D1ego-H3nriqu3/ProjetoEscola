@@ -71,7 +71,7 @@ router.post("/turmas", validarTurma, verificarSala, (req, res) => {
 })
 
 function validarAluno(req,res,next){
-    if(!req.body.nome || !req.body.idade || req.body.sala === ""){
+    if(!req.body.nome || !req.body.idade || req.body.nome === ""){
         return res.status(400).send({erro: "As informações estão faltando ou incorretas!"})
     }
     next()
@@ -79,7 +79,7 @@ function validarAluno(req,res,next){
 
 function validarIdade(req, res, next){
     if(req.body.idade < 14 || isNaN(req.body.idade)){
-        return res.status(200).send({erro: "Idade mínima: 14 anos" })
+        return res.status(400).send({erro: "Idade mínima: 14 anos" })
     }
     next()
 }
