@@ -40,6 +40,24 @@ router.get("/alunos/:id", (req, res) => {
     }
 })
 
+function validarSenha(req,res,next){
+    if(req.headers.senha !== "coordenacao"){
+        res.status(401).send({erro: "Acesso negado!"})
+    }
+    next()
+}
+
+router.delete("/turmas/:id", validarSenha, (req,res) => {
+    const id = Number(req.params.id)
+    const indice = turmas.findIndex((turma) => turma.id === id)
+    if(indice === -1){
+       return res.status(404).send({erro: "Turma não encontrada!"})
+    }else{
+    turmas.splice(indice, 1)
+    res.send({mensagem: "Turma apagada com sucesso!"})
+    }
+})
+
 router.listen(port, () => {
     console.log(`Server -`, port)
 })
